@@ -1,4 +1,4 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYmMiLCJleHAiOjE3MTI3MDg3MTN9.Mxg-lW_hfdHuWM50f4dMZXyyt19boszkPdt8KhKgUow
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYmMiLCJleHAiOjE3MTI3MDk4MjJ9.UND3sjqd-UYTKPl3tVPyZEznpS0VghS19C9pHOG9oxE
 
 ### Verbo GET – filtrar por id
 GET http://localhost:8000/comanda/1 HTTP 1.1
