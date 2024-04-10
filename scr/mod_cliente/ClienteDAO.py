@@ -1,8 +1,13 @@
 import db
 from mod_cliente.ClienteModel import ClienteDB
+from mod_cliente.Cliente import Cliente
 from fastapi import APIRouter
 
-router = APIRouter()
+from typing import Annotated
+from fastapi import Depends
+from security import get_current_active_user, User
+
+router = APIRouter( dependencies=[Depends(get_current_active_user)] )
 
 @router.get("/cliente/", tags=["Cliente"])
 def get_clientes():
@@ -27,7 +32,7 @@ def get_cliente(id: int):
         session.close()
 
 @router.post("/cliente/", tags=["Cliente"])
-def post_cliente(corpo: ClienteDB):
+def post_cliente(corpo: Cliente):
     try:
         session = db.Session()
         dados = ClienteDB(nome=corpo.nome, cpf=corpo.cpf, telefone=corpo.telefone)
@@ -41,7 +46,7 @@ def post_cliente(corpo: ClienteDB):
         session.close()
 
 @router.put("/cliente/{id}", tags=["Cliente"])
-def put_cliente(id: int, corpo: ClienteDB):
+def put_cliente(id: int, corpo: Cliente):
     try:
         session = db.Session()
         dados = session.query(ClienteDB).filter(ClienteDB.id_cliente == id).one()

@@ -1,8 +1,12 @@
 import db
 from mod_produto.ProdutoModel import ProdutoDB
+from mod_produto.Produto import Produto
 from fastapi import APIRouter
+from typing import Annotated
+from fastapi import Depends
+from security import get_current_active_user, User
 
-router = APIRouter()
+router = APIRouter( dependencies=[Depends(get_current_active_user)] )
 
 @router.get("/produto/", tags=["Produto"])
 def get_produtos():
@@ -27,7 +31,7 @@ def get_produto(id: int):
         session.close()
 
 @router.post("/produto/", tags=["Produto"])
-def post_produto(corpo: ProdutoDB):
+def post_produto(corpo: Produto):
     try:
         session = db.Session()
         dados = ProdutoDB(nome=corpo.nome, descricao=corpo.descricao, foto=corpo.foto, valor_unitario=corpo.valor_unitario)
@@ -41,7 +45,7 @@ def post_produto(corpo: ProdutoDB):
         session.close()
 
 @router.put("/produto/{id}", tags=["Produto"])
-def put_produto(id: int, corpo: ProdutoDB):
+def put_produto(id: int, corpo: Produto):
     try:
         session = db.Session()
         dados = session.query(ProdutoDB).filter(ProdutoDB.id_produto == id).one()

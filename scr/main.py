@@ -5,15 +5,23 @@ from settings import HOST, PORT, RELOAD
 from mod_funcionario import FuncionarioDAO
 from mod_cliente import ClienteDAO
 from mod_produto import ProdutoDAO
+from mod_comanda import ComandaDAO
+import security
+
 app = FastAPI()
+
 # rota padrão
 @app.get("/")
 def root():
     return {"detail": "API Comandas", "Swagger UI": "http://127.0.0.1:8000/docs", "ReDoc": "http://127.0.0.1:8000/redoc"}
+
 # mapeamento das rotas/endpoints
 app.include_router(FuncionarioDAO.router)
 app.include_router(ClienteDAO.router)
 app.include_router(ProdutoDAO.router)
+app.include_router(security.router)
+app.include_router(ComandaDAO.router)
+
 # cria, caso não existam, as tabelas de todos os modelos que encontrar na aplicação (importados)
 import db
 db.criaTabelas()

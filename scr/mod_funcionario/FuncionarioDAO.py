@@ -1,8 +1,12 @@
 import db
 from mod_funcionario.FuncionarioModel import FuncionarioDB
+from mod_funcionario.Funcionario import Funcionario
 from fastapi import APIRouter
+from typing import Annotated
+from fastapi import Depends
+from security import get_current_active_user, User
 
-router = APIRouter()
+router = APIRouter( dependencies=[Depends(get_current_active_user)] )
 
 @router.get("/funcionario/", tags=["Funcionário"])
 def get_funcionarios():
@@ -27,10 +31,10 @@ def get_funcionario(id: int):
         session.close()
 
 @router.post("/funcionario/", tags=["Funcionário"])
-def post_funcionario(corpo: FuncionarioDB):
+def post_funcionario(corpo: Funcionario):
     try:
         session = db.Session()
-        dados = FuncionarioDB(nome=corpo.nome, matricula=corpo.matricula, cpf=corpo.cpf, telefone=corpo.telefone, grupo=corpo.grupo, senha=corpo.senha)
+        dados = FuncionarioDB(None, nome=corpo.nome, matricula=corpo.matricula, cpf=corpo.cpf, telefone=corpo.telefone, grupo=corpo.grupo, senha=corpo.senha)
         session.add(dados)
         session.commit()
         return {"id": dados.id_funcionario}, 200
@@ -41,7 +45,7 @@ def post_funcionario(corpo: FuncionarioDB):
         session.close()
 
 @router.put("/funcionario/{id}", tags=["Funcionário"])
-def put_funcionario(id: int, corpo: FuncionarioDB):
+def put_funcionario(id: int, corpo: Funcionario):
     try:
         session = db.Session()
         dados = session.query(FuncionarioDB).filter(FuncionarioDB.id_funcionario == id).one()
@@ -75,7 +79,7 @@ def delete_funcionario(id: int):
         session.close()
 
 @router.post("/funcionario/login/", tags=["Funcionário - Login"])
-def login_funcionario(corpo: FuncionarioDB):
+def login_funcionario(corpo: Funcionario):
     try:
         session = db.Session()
         dados = session.query(FuncionarioDB).filter(FuncionarioDB.cpf == corpo.cpf).filter(FuncionarioDB.senha == corpo.senha).one()
@@ -90,6 +94,47 @@ def cpf_funcionario(cpf: str):
     try:
         session = db.Session()
         dados = session.query(FuncionarioDB).filter(FuncionarioDB.cpf == cpf).all()
+        return dados, 200
+    except Exception as e:
+        return {"erro": str(e)}, 400
+    finally:
+        session.close()
+
+# import da segurança
+from typing import Annotated
+from fastapi import Depends
+from security import get_current_active_user, User
+
+@router.get("/funcionario/", tags=["Funcionário"], dependencies=[Depends(get_current_active_user)])
+def get_funcionario():
+    try:
+        session = db.Session()
+        # busca todos
+        dados = session.query(FuncionarioDB).all()
+        return dados, 200
+    except Exception as e:
+        return {"erro": str(e)}, 400
+    finally:
+        session.close()
+
+@router.post("/funcionario/", tags=["Funcionário"], dependencies=[Depends(get_current_active_user)])
+def post_funcionario():
+    try:
+        session = db.Session()
+        # busca todos
+        dados = session.query(FuncionarioDB).all()
+        return dados, 200
+    except Exception as e:
+        return {"erro": str(e)}, 400
+    finally:
+        session.close()
+
+@router.get("/funcionario/", tags=["Funcionário"], dependencies=[Depends(get_current_active_user)])
+def get_funcionario():
+    try:
+        session = db.Session()
+        # busca todos
+        dados = session.query(FuncionarioDB).all()
         return dados, 200
     except Exception as e:
         return {"erro": str(e)}, 400
